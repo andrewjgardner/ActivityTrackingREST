@@ -32,7 +32,7 @@ namespace ActivityTrackingAPI.Services
 
         public async Task<Activity> GetActivityAsync(string id)
         {
-            return await _context.Activities.FirstOrDefaultAsync(a => a.Id == id);
+            return await _context.Activities.Include(a => a.Attachments).FirstOrDefaultAsync(a => a.Id == id);
         }
 
         public async Task<IEnumerable<ActivityTypeItem>> GetActivityTypesAsync(DateTime startDate, DateTime endDate)
@@ -51,9 +51,9 @@ namespace ActivityTrackingAPI.Services
                 });
         }
 
-        public void Save()
+        public async Task Save()
         {
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
     }
 }

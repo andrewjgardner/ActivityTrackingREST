@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ActivityTrackingAPI.Data;
 using ActivityTrackingAPI.Models;
 using Microsoft.AspNetCore.JsonPatch;
-using Newtonsoft.Json;
+using ActivityTrackingAPI.Services;
 
 namespace ActivityTrackingAPI.Controllers
 {
@@ -11,44 +10,58 @@ namespace ActivityTrackingAPI.Controllers
     [ApiController]
     public class ActivityController : ControllerBase
     {
-        private readonly ActivityContext _context;
+        private readonly ActivityService _activityService;
 
-        public ActivityController(ActivityContext context)
+        public ActivityController(ActivityService activityService)
         {
-            _context = context;
+            _activityService = activityService;
         }
 
-        [HttpGet("types/{startDate}/{endDate}")]
-        public async Task<ActionResult<IEnumerable<Activity>>> GetActivityTypesDateRange(DateTime startDate, DateTime endDate)
+        // GET : api/v1/Activity/1
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Activity>> GetActivity(string id)
         {
-            if (_context.Activities == null)
+            if (!_activityService.ActivitiesExist())
+            {
+                return Problem("Entity set 'ActivityContext.Activities'  is null.");
+            }
+
+            var activity = await _activityService.GetActivityAsync(id);
+
+            if (activity == null)
             {
                 return NotFound();
             }
 
-            var activities = await _context.Activities
-                .Where(a => a.DateTimeStarted > startDate && a.DateTimeFinished < endDate)
-                .ToArrayAsync();
+            return new ObjectResult(activity);
+        }
 
-            var activityTypes = activities
-                .GroupBy(a => a.Type)
-                .Select(s => new ActivityTypeItem
-                {
-                    Type = s.Key,
-                    Duration = new TimeSpan(s.Sum(r => r.TimeSpan.Ticks)),
-                    Activities = s.ToList()
-                });
+        // GET : api/v1/Activity/2022-06-10T01:04:36.905/2022-06-25T01:04:36.905
+        [HttpGet("types/{startDate}/{endDate}")]
+        public async Task<ActionResult<IEnumerable<ActivityTypeItem>>> GetActivityTypesDateRange(DateTime startDate, DateTime endDate)
+        {
+            if (!_activityService.ActivitiesExist())
+            {
+                return Problem("Entity set 'ActivityContext.Activities'  is null.");
+            }
+
+            IEnumerable<ActivityTypeItem>? activityTypes = await _activityService.GetActivityTypesAsync(startDate, endDate);
 
             return new ObjectResult(activityTypes);
         }
 
         // PATCH : api/v1/Activity/5
         [HttpPatch]
-        public async Task<IActionResult> PatchActivity(string id, [FromBody] JsonPatchDocument<ActivityPatch> patchDocument)
+        public async Task<ActionResult<Activity>> PatchActivity(string id, [FromBody] JsonPatchDocument<ActivityPatch> patchDocument)
         {
+            if (!_activityService.ActivitiesExist())
+            {
+                return Problem("Entity set 'ActivityContext.Activities'  is null.");
+            }
+
             if (patchDocument != null)
             {
-                var activity = await _context.Activities.FindAsync(id);
+                Activity? activity = await _activityService.GetActivityAsync(id);
                 if (activity == null)
                 {
                     return NotFound();
@@ -61,7 +74,7 @@ namespace ActivityTrackingAPI.Controllers
                     return ValidationProblem();
                 }
 
-                await _context.SaveChangesAsync();
+                await _activityService.Save();
                 return new ObjectResult(activity);
             }
             else
@@ -74,7 +87,7 @@ namespace ActivityTrackingAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Activity>> PostActivity(Activity activity)
         {
-            if (_context.Activities == null)
+            if (!_activityService.ActivitiesExist())
             {
                 return Problem("Entity set 'ActivityContext.Activities'  is null.");
             }
@@ -84,13 +97,11 @@ namespace ActivityTrackingAPI.Controllers
                 return BadRequest("Cannot submit attachments to activity type which is not email.");
             }
 
-            _context.Activities.Add(activity);
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _activityService.CreateActivityAsync(activity);
             }
-            catch (DbUpdateException) when (ActivityExists(activity.Id))
+            catch (DbUpdateException) when (_activityService.ActivityExists(activity.Id))
             {
                 return Conflict();
             }
@@ -98,9 +109,5 @@ namespace ActivityTrackingAPI.Controllers
             return CreatedAtAction("GetActivity", new { id = activity.Id }, activity);
         }
 
-        private bool ActivityExists(string id)
-        {
-            return (_context.Activities?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
     }
 }

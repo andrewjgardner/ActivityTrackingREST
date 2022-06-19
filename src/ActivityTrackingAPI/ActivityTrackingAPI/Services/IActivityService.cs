@@ -10,6 +10,6 @@ namespace ActivityTrackingAPI.Services
         Task<IEnumerable<ActivityTypeItem>> GetActivityTypesAsync(DateTime startDate, DateTime endDate);
         Task<Activity> GetActivityAsync(string id);
         Task<Activity> CreateActivityAsync(Activity activity);
-        void Save();
+        Task Save();
     }
 }
