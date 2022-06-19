@@ -18,35 +18,6 @@ namespace ActivityTrackingAPI.Controllers
             _context = context;
         }
 
-        // GET: api/Activity
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Activity>>> GetActivities()
-        {
-            if (_context.Activities == null)
-            {
-                return NotFound();
-            }
-            return await _context.Activities.Include(a => a.Attachments).ToListAsync();
-        }
-
-        // GET: api/Activity/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Activity>> GetActivity(string id)
-        {
-            if (_context.Activities == null)
-            {
-                return NotFound();
-            }
-            var activity = await _context.Activities.Include(a => a.Attachments).FirstOrDefaultAsync(a => a.Id == id);
-
-            if (activity == null)
-            {
-                return NotFound();
-            }
-
-            return activity;
-        }
-
         [HttpGet("types/{startDate}/{endDate}")]
         public async Task<ActionResult<IEnumerable<Activity>>> GetActivityTypesDateRange(DateTime startDate, DateTime endDate)
         {
@@ -69,29 +40,6 @@ namespace ActivityTrackingAPI.Controllers
                 });
 
             return new ObjectResult(activityTypes);
-        }
-
-        // PUT: api/Activity/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutActivity(string id, Activity activity)
-        {
-            if (id != activity.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(activity).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException) when (!ActivityExists(id))
-            {
-                return NotFound();
-            }
-
-            return NoContent();
         }
 
         // PATCH : api/v1/Activity/5
@@ -148,26 +96,6 @@ namespace ActivityTrackingAPI.Controllers
             }
 
             return CreatedAtAction("GetActivity", new { id = activity.Id }, activity);
-        }
-
-        // DELETE: api/Activity/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteActivity(string id)
-        {
-            if (_context.Activities == null)
-            {
-                return NotFound();
-            }
-            var activity = await _context.Activities.FindAsync(id);
-            if (activity == null)
-            {
-                return NotFound();
-            }
-
-            _context.Activities.Remove(activity);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
         private bool ActivityExists(string id)
