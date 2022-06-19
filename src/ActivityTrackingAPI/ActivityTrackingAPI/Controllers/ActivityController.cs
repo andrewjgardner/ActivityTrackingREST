@@ -27,15 +27,15 @@ namespace ActivityTrackingAPI.Controllers
             }
 
             var activities = await _context.Activities
-                .Where(a => a.DateTimeStarted > startDate && a.DateTimeEnded < endDate)
+                .Where(a => a.DateTimeStarted > startDate && a.DateTimeFinished < endDate)
                 .ToArrayAsync();
 
             var activityTypes = activities
                 .GroupBy(a => a.Type)
-                .Select(s => new
+                .Select(s => new ActivityTypeItem
                 {
-                    Type = Enum.GetName(typeof(ActivityType), s.Key),
-                    Duration = s.Sum(r => r.TimeSpan.Ticks),
+                    Type = s.Key,
+                    Duration = new TimeSpan(s.Sum(r => r.TimeSpan.Ticks)),
                     Activities = s.ToList()
                 });
 

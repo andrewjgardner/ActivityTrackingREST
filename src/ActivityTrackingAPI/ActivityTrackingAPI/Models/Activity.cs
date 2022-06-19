@@ -22,7 +22,7 @@ namespace ActivityTrackingAPI.Models
     {
         public string Name { get; set; }
         public DateTime DateTimeStarted { get; set; }
-        public DateTime DateTimeEnded { get; set; }
+        public DateTime DateTimeFinished { get; set; }
         public TimeSpan TimeSpan { get; set; }
     }
 
