@@ -23,12 +23,12 @@ namespace ActivityTrackingAPI.Services
             return (_context.Activities?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        public async Task CreateActivityAsync(Activity activity)
+        public void CreateActivity(Activity activity)
         {
             _context.Activities.Add(activity);
         }
 
-        public async Task<Activity> GetActivityAsync(string id)
+        public async Task<Activity?> GetActivityAsync(string id)
         {
             return await _context.Activities.Include(a => a.Attachments).FirstOrDefaultAsync(a => a.Id == id);
         }

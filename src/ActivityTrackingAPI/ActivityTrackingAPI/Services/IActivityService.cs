@@ -8,8 +8,8 @@ namespace ActivityTrackingAPI.Services
         bool ActivitiesExist();
         bool ActivityExists(string id);
         Task<IEnumerable<ActivityTypeItem>> GetActivityTypesAsync(DateTime startDate, DateTime endDate);
-        Task<Activity> GetActivityAsync(string id);
-        Task CreateActivityAsync(Activity activity);
+        Task<Activity?> GetActivityAsync(string id);
+        void CreateActivity(Activity activity);
         Task Save();
     }
 }

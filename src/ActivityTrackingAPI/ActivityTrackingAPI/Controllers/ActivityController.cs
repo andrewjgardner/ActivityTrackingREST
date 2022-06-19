@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ActivityTrackingAPI.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using ActivityTrackingAPI.Services;
@@ -95,7 +94,7 @@ namespace ActivityTrackingAPI.Controllers
 
             try
             {
-                await _activityService.CreateActivityAsync(activity);
+                _activityService.CreateActivity(activity);
                 await _activityService.Save();
             }
             catch when (_activityService.ActivityExists(activity.Id))

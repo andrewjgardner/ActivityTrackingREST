@@ -5,9 +5,9 @@ namespace ActivityTrackingAPI.Models
     public class Activity : ActivityPatch
     {
         [Key]
-        public string Id { get; set; }
+        public string? Id { get; set; }
         [Required]
-        public string FirmId { get; set; }
+        public string? FirmId { get; set; }
         [Required]
         public ActivityType Type { get; set; }
         public List<Attachment> Attachments { get; set; } = new List<Attachment>();
@@ -20,7 +20,7 @@ namespace ActivityTrackingAPI.Models
 
     public class ActivityPatch
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public DateTime DateTimeStarted { get; set; }
         public DateTime DateTimeFinished { get; set; }
         public TimeSpan ElapsedTime { get; set; }
@@ -28,8 +28,10 @@ namespace ActivityTrackingAPI.Models
 
     public class Attachment
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
+        [Required]
+        public string? Id { get; set; }
+        [Required]
+        public string? Name { get; set; }
     }
 
     public enum ActivityType
