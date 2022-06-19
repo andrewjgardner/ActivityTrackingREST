@@ -17,7 +17,6 @@ namespace ActivityTrackingAPI.Controllers
             _activityService = activityService;
         }
 
-        // GET : api/v1/Activity/1
         [HttpGet("{id}")]
         public async Task<ActionResult<Activity>> GetActivity(string id)
         {
@@ -36,7 +35,6 @@ namespace ActivityTrackingAPI.Controllers
             return new ObjectResult(activity);
         }
 
-        // GET : api/v1/Activity/2022-06-10T01:04:36.905/2022-06-25T01:04:36.905
         [HttpGet("types/{startDate}/{endDate}")]
         public async Task<ActionResult<IEnumerable<ActivityTypeItem>>> GetActivityTypesDateRange(DateTime startDate, DateTime endDate)
         {
@@ -50,7 +48,6 @@ namespace ActivityTrackingAPI.Controllers
             return new ObjectResult(activityTypes);
         }
 
-        // PATCH : api/v1/Activity/5
         [HttpPatch]
         public async Task<ActionResult<Activity>> PatchActivity(string id, [FromBody] JsonPatchDocument<ActivityPatch> patchDocument)
         {
@@ -83,7 +80,6 @@ namespace ActivityTrackingAPI.Controllers
             }
         }
 
-        // POST: api/Activity
         [HttpPost]
         public async Task<ActionResult<Activity>> PostActivity(Activity activity)
         {
@@ -100,8 +96,9 @@ namespace ActivityTrackingAPI.Controllers
             try
             {
                 await _activityService.CreateActivityAsync(activity);
+                await _activityService.Save();
             }
-            catch (DbUpdateException) when (_activityService.ActivityExists(activity.Id))
+            catch when (_activityService.ActivityExists(activity.Id))
             {
                 return Conflict();
             }

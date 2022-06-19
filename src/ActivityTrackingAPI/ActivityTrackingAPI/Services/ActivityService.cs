@@ -23,11 +23,9 @@ namespace ActivityTrackingAPI.Services
             return (_context.Activities?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        public Task<Activity> CreateActivityAsync(Activity activity)
+        public async Task CreateActivityAsync(Activity activity)
         {
             _context.Activities.Add(activity);
-            _ = _context.SaveChangesAsync();
-            return Task.FromResult(activity);
         }
 
         public async Task<Activity> GetActivityAsync(string id)
@@ -38,6 +36,7 @@ namespace ActivityTrackingAPI.Services
         public async Task<IEnumerable<ActivityTypeItem>> GetActivityTypesAsync(DateTime startDate, DateTime endDate)
         {
             var activities = await _context.Activities
+                .Include(a => a.Attachments)
                 .Where(a => a.DateTimeStarted > startDate && a.DateTimeFinished < endDate)
                 .ToArrayAsync();
 
@@ -46,7 +45,7 @@ namespace ActivityTrackingAPI.Services
                 .Select(s => new ActivityTypeItem
                 {
                     Type = s.Key,
-                    Duration = new TimeSpan(s.Sum(r => r.TimeSpan.Ticks)),
+                    TotalElapsedTime = new TimeSpan(s.Sum(r => r.ElapsedTime.Ticks)),
                     Activities = s.ToList()
                 });
         }

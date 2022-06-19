@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ActivityTrackingAPI.Migrations
 {
     [DbContext(typeof(ActivityContext))]
-    [Migration("20220619004525_InitialSchema")]
+    [Migration("20220619082114_InitialSchema")]
     partial class InitialSchema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,10 +24,13 @@ namespace ActivityTrackingAPI.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("DateTimeEnded")
+                    b.Property<DateTime>("DateTimeFinished")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DateTimeStarted")
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeSpan>("ElapsedTime")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FirmId")
@@ -38,15 +41,43 @@ namespace ActivityTrackingAPI.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<TimeSpan>("TimeSpan")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("Type")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
                     b.ToTable("Activities");
+                });
+
+            modelBuilder.Entity("ActivityTrackingAPI.Models.Attachment", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ActivityId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
+
+                    b.ToTable("Attachment");
+                });
+
+            modelBuilder.Entity("ActivityTrackingAPI.Models.Attachment", b =>
+                {
+                    b.HasOne("ActivityTrackingAPI.Models.Activity", null)
+                        .WithMany("Attachments")
+                        .HasForeignKey("ActivityId");
+                });
+
+            modelBuilder.Entity("ActivityTrackingAPI.Models.Activity", b =>
+                {
+                    b.Navigation("Attachments");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,13 +1,31 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace ActivityTrackingAPI.Migrations
 {
-    public partial class Attachments : Migration
+    public partial class InitialSchema : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Activities",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    FirmId = table.Column<string>(type: "TEXT", nullable: false),
+                    Type = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    DateTimeStarted = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    DateTimeFinished = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ElapsedTime = table.Column<TimeSpan>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Activities", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Attachment",
                 columns: table => new
@@ -36,6 +54,9 @@ namespace ActivityTrackingAPI.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Attachment");
+
+            migrationBuilder.DropTable(
+                name: "Activities");
         }
     }
 }

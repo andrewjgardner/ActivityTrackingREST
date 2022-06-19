@@ -28,15 +28,15 @@ namespace ActivityTrackingAPI.Migrations
                     b.Property<DateTime>("DateTimeStarted")
                         .HasColumnType("TEXT");
 
+                    b.Property<TimeSpan>("ElapsedTime")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("FirmId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<TimeSpan>("TimeSpan")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Type")
