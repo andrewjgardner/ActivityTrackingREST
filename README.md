@@ -1,10 +1,4 @@
-# LEAPDevInterview - Take Home Coding Test
-
-LEAP Dev is building an activity tracking solution for law firms such
-that they can record the time spent performing different types of
-activities during the process of providing a legal service.
-
-Create an application in .NET (using C#) for bulding out some REST API
+#Create an application in .NET (using C#) for bulding out some REST API
 endpoints, as detailed below.
 
 i) A client wants to be able to record the time they spend on different
