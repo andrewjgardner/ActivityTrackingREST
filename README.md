@@ -59,3 +59,44 @@ You can use postman to create and test cURLs.
 
 *** if you have time; write tests for logic where necessary.
 --------
+
+# How to use
+
+i) 
+curl -X 'POST' \
+  'https://localhost:7003/api/v1/activity' \
+  -H 'accept: text/plain' \
+  -H 'Content-Type: application/json-patch+json' \
+  -d '{
+  "name": "string",
+  "dateTimeStarted": "2022-06-19T22:06:58.747Z",
+  "dateTimeFinished": "2022-06-19T22:06:58.747Z",
+  "elapsedTime": "00:30:00",
+  "id": "testtesttest",
+  "firmId": "string",
+  "type": 0,
+  "attachments": [
+    {
+      "id": "testtesttesttest",
+      "name": "string"
+    }
+  ]
+}'
+
+ii)
+curl -X 'PATCH' \
+  'https://localhost:7003/api/v1/activity?id=TestThree' \
+  -H 'accept: text/plain' \
+  -H 'Content-Type: application/json-patch+json' \
+  -d '[
+  {
+    "path": "/elapsedTime",
+    "op": "add",
+    "value": "01:30:00"
+  }
+]'
+
+iii)
+curl -X 'GET' \
+  'https://localhost:7003/api/v1/activity/types/2022-06-10T21%3A59%3A01.581Z/2022-06-30T21%3A59%3A01.581Z' \
+  -H 'accept: text/plain'
